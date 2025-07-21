@@ -1,6 +1,6 @@
 # API de Supervision Agricole – Maraîchage BIO & Piment d'Espelette AOC BIO
 
-Ce travail sur une API REST est la version simplifiée d'un de nos projets de BTS SN IR.
+Ce premier travail sur une API REST est la version simplifiée d'un de nos projets de BTS SN IR.
 
 ## Table des matières
 
@@ -32,9 +32,15 @@ Cette API Symfony 6.4 + API Platform permet donc de superviser une exploitation 
 
 ---
 
-## Ressources principales
+## Entités principales
 
 ### Mesure
+```php
+id: int
+libelleMesure: LibelleMesure
+valeur: float
+createdAt: \DateTimeInterface
+```
 
 - Représente une mesure physique prise par un capteur.
 - Structure de sortie personnalisée via un DTO `MesureOutput`
@@ -53,11 +59,24 @@ Cette API Symfony 6.4 + API Platform permet donc de superviser une exploitation 
 ```
 
 ### LibelleMesure
-
+```php
+id: int
+libelle: string
+unite: string
+```
 - Permet de référencer les types de mesure disponibles (ex : température, humidité)
 - Inclut une unité (°C ou %)
 - Accessible en lecture/écriture uniquement par un utilisateur authentifié avec `ROLE_ADMIN` depuis une IP autorisée
 
+### MesureOutput (DTO)
+
+```php
+valeur: float
+libelle: string
+unite: string
+createdAt: \DateTimeInterface
+```
+- Un normalizer personnalisé (MesureOutputNormalizer) permet d’adapter la sortie de l’API pour cette entité.
 ---
 
 ## Sécurité & filtrage IP
@@ -132,23 +151,42 @@ access_control:
 
 ---
 
-## Tests
+## Exemple de routes
 
-Pour les environnements de test, les algorithmes de hachage sont allégés pour améliorer la vitesse :
+| Méthode | URI                  | Accès                       | Description                          |
+|---------|----------------------|-----------------------------|--------------------------------------|
+| POST    | /api/auth_token      | Public                      | Obtenir un token JWT                 |
+| GET     | /api/mesures         | Authentifié (IP + rôle)     | Liste des mesures                    |
+| POST    | /api/mesures         | Public                      | Enregistrement automatique (Arduino) |
+| PATCH   | /api/mesures/{id}    | Authentifié (IP + rôle)     | Met à jour une mesure (test)         |
+| DELETE  | /api/mesures/{id}    | Authentifié (IP + rôle)     | Supprime une mesure                  |
+| GET     | /api/libelle_mesures | Authentifié (IP + rôle)     | Liste des types de mesures           |
 
-```yaml
-when@test:
-    security:
-        password_hashers:
-            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-                algorithm: auto
-                cost: 4
-                time_cost: 3
-                memory_cost: 10
-```
 
 ---
+## Structure partielle
+```shell
+├── src/
+│   ├── Entity/
+│   │   ├── Mesure.php
+│   │   └── LibelleMesure.php
+│   ├── Dto/
+│   │   └── MesureOutput.php
+│   └── Serializer/
+│       └── MesureOutputNormalizer.php
+├── config/
+│   └── packages/
+│       └── lexik_jwt_authentication.yaml
+├── README.md
+```
+---
+## Tests & développement
 
+- L’authentification est stateless : aucun cookie/session. 
+- Utiliser Postman, cURL ou un frontend JS avec Authorization: Bearer <token> dans les requêtes. 
+- Pour les tests unitaires avec JWT : penser à simuler le token ou à désactiver temporairement le firewall dans l’environnement test.
+
+---
 ## Technologies utilisées
 
 - Symfony 6.4
@@ -156,5 +194,12 @@ when@test:
 - LexikJWTAuthenticationBundle
 - Doctrine ORM
 - MySQL
+- PHP 8.2+
 - Normalisation personnalisée via `MesureOutputNormalizer`
+- Postman / cURL pour les tests
 
+---
+## Documentation
+- [API Platform](https://api-platform.com/)
+- [LexikJWTAuthenticationBundle](https://github.com/lexik/LexikJWTAuthenticationBundle)
+- [Symfony Security](https://symfony.com/doc/6.4/security.html)
