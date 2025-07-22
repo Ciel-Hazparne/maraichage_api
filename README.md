@@ -142,25 +142,26 @@ curl -X GET http://localhost:8000/api/mesures \
 
 ```yaml
 access_control:
-    - { path: ^/api/$, roles: PUBLIC_ACCESS }
-    - { path: ^/api/docs, roles: PUBLIC_ACCESS }
-    - { path: ^/api/auth_token, roles: PUBLIC_ACCESS }
-    - { path: ^/api/mesures$, roles: PUBLIC_ACCESS }
-    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+  - { path: ^/api/$, roles: PUBLIC_ACCESS }                     # Permet d'accéder à l'interface utilisateur de Swagger
+  - { path: ^/api/docs, roles: PUBLIC_ACCESS }                  # Permet d'accéder à la documentation de l'interface utilisateur Swagger
+  - { path: ^/api/auth_token, roles: PUBLIC_ACCESS }            # Autorise tout le monde à se connecter
+  - { path: ^/api/mesures, roles: PUBLIC_ACCESS }               # Autorise GET pour l'affichage des graphiques et POST pour l'Arduino
+  - { path: ^/api/libelle_mesures, roles: PUBLIC_ACCESS }       # Autorise les requêtes GET pour l'affichage des graphiques
+  - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }              # Toutes les autres routes /api/* nécessitent un JWT valide
 ```
 
 ---
 
 ## Exemple de routes
 
-| Méthode | URI                  | Accès                       | Description                          |
-|---------|----------------------|-----------------------------|--------------------------------------|
-| POST    | /api/auth_token      | Public                      | Obtenir un token JWT                 |
-| GET     | /api/mesures         | Authentifié (IP + rôle)     | Liste des mesures                    |
-| POST    | /api/mesures         | Public                      | Enregistrement automatique (Arduino) |
-| PATCH   | /api/mesures/{id}    | Authentifié (IP + rôle)     | Met à jour une mesure (test)         |
-| DELETE  | /api/mesures/{id}    | Authentifié (IP + rôle)     | Supprime une mesure                  |
-| GET     | /api/libelle_mesures | Authentifié (IP + rôle)     | Liste des types de mesures           |
+| Méthode | URI                  | Accès                   | Description                          |
+|---------|----------------------|-------------------------|--------------------------------------|
+| POST    | /api/auth_token      | Public                  | Obtenir un token JWT                 |
+| GET     | /api/mesures         | Public                  | Liste des mesures                    |
+| POST    | /api/mesures         | Public                  | Enregistrement automatique (Arduino) |
+| PATCH   | /api/mesures/{id}    | Authentifié (IP + rôle) | Met à jour une mesure (test)         |
+| DELETE  | /api/mesures/{id}    | Authentifié (IP + rôle) | Supprime une mesure                  |
+| GET     | /api/libelle_mesures | APublic                 | Liste des types de mesures           |
 
 
 ---

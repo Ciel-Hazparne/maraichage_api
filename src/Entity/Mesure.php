@@ -9,6 +9,9 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Dto\MesureOutput;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -16,22 +19,25 @@ use Doctrine\ORM\Mapping as ORM;
     output: MesureOutput::class,
     inputFormats: ['jsonld' => ['application/ld+json'], 'json' => ['application/json']],
     outputFormats: ['jsonld' => ['application/ld+json'], 'json' => ['application/json']],
-    // on autorise 2 IP
-    security: "is_granted('ROLE_ADMIN') and request.getClientIp() in ['127.0.0.1', '10.0.0.102']",
-    // on autorise tout le réseau 10.0.0.0/16
-    // security: "is_granted('ROLE_ADMIN') and request.getClientIp() matches '/^10\.\\d{1,3}\.\d{1,3}\.\d{1,3}$/'"
-    securityMessage: "Accès restreint à l'administrateur depuis le réseau 10.0.0.0/16.",
     operations: [
-        new GetCollection(),
-        new Get(),
+        new GetCollection(security: "true"), // accès public
+        new Get(security: "true"), // accès public
         new Post(
             security: "true", // accès public
             securityMessage: "Création accessible en POST depuis l'extérieur."
         ),
-        new Patch(),
-        new Delete(),
+        new Patch(
+            security: "is_granted('ROLE_ADMIN') and request.getClientIp() matches '/^(127\\.0\\.0\\.1|10\\.0\\.0\\.\\d+)$/'",
+            securityMessage: "Modification réservée à l'administrateur depuis le réseau interne."
+        ),
+        new Delete(
+            security: "is_granted('ROLE_ADMIN') and request.getClientIp() matches '/^(127\\.0\\.0\\.1|10\\.0\\.0\\.\\d+)$/'",
+            securityMessage: "Suppression réservée à l'administrateur depuis le réseau interne."
+        ),
     ]
 )]
+#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
+#[ApiFilter(SearchFilter::class, properties: ['libelleMesure.libelle' => 'exact'])]
 class Mesure
 {
     #[ORM\Id]
