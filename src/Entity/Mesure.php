@@ -21,9 +21,9 @@ use Doctrine\ORM\Mapping as ORM;
     outputFormats: ['jsonld' => ['application/ld+json'], 'json' => ['application/json']],
     operations: [
         new GetCollection(security: "true"), // accès public
-        new Get(security: "true"), // accès public
+        new Get(security: "true"),           // accès public
         new Post(
-            security: "true", // accès public
+            security: "true",                // accès public
             securityMessage: "Création accessible en POST depuis l'extérieur."
         ),
         new Patch(

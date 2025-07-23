@@ -26,6 +26,7 @@ class MesureOutputNormalizer implements ContextAwareNormalizerInterface, Cacheab
         }
 
         $output = new MesureOutput(
+            $object->getId(),
             $object->getValeur(),
             $object->getUnite(),
             $object->getLibelle(),
