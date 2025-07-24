@@ -36,7 +36,7 @@ use Doctrine\ORM\Mapping as ORM;
         ),
     ]
 )]
-#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
+//#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
 #[ApiFilter(SearchFilter::class, properties: ['libelleMesure.libelle' => 'exact'])]
 class LibelleMesure
 {

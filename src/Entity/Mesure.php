@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ApiResource(
+    order: ['createdAt' => 'DESC'],
     output: MesureOutput::class,
     inputFormats: ['jsonld' => ['application/ld+json'], 'json' => ['application/json']],
     outputFormats: ['jsonld' => ['application/ld+json'], 'json' => ['application/json']],
@@ -36,7 +37,7 @@ use Doctrine\ORM\Mapping as ORM;
         ),
     ]
 )]
-#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
+//#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
 #[ApiFilter(SearchFilter::class, properties: ['libelleMesure.libelle' => 'exact'])]
 class Mesure
 {
